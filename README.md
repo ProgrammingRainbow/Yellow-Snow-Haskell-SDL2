@@ -1,1 +1,1 @@
-# Yellow-Snow-Haskell-SDL2
+# Yellow-Snow
