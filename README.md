@@ -18,4 +18,6 @@ stack run
 Left Arrow - Moves left.\
 Right Arrow - Moves right.\
 Space Bar - Resets the Game.\
+F - Toggles Show FPS.\
+M - Toggles Music.\
 Escape - Quits and closes game.
