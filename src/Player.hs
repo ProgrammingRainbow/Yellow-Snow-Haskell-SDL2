@@ -13,38 +13,52 @@ import           GameTypes           (GameState (..))
 resetPlayer :: StateT GameState IO ()
 resetPlayer = do
     gameState <- get
-    let (SDL.Rectangle _ (SDL.V2 w h)) = gamePlayerRect gameState
-    let x = div (screenWidth - w) 2
+    let (SDL.Rectangle _ (SDL.V2 w h), _, _) = gamePlayerRect gameState
+    let xF = (screenWidth - fromIntegral w) / 2
+    let playerRect =
+            ( SDL.Rectangle (SDL.P (SDL.V2 (round xF) (round playerY))) (SDL.V2 w h)
+            , xF
+            , playerY
+            )
+
     put $
         gameState
-            { gamePlayerRect = SDL.Rectangle (SDL.P (SDL.V2 x playerY)) (SDL.V2 w h)
+            { gamePlayerRect = playerRect
             }
 
 updatePlayer :: StateT GameState IO ()
 updatePlayer = do
     gameState <- get
     keyboardState <- SDL.getKeyboardState
+    let playerRect = gamePlayerRect gameState
+        oldFlip = gamePlayerFlip gameState
+        deltaTime = gameDeltaTime gameState
 
     let left = keyboardState SDL.ScancodeLeft || keyboardState SDL.ScancodeA
     let right = keyboardState SDL.ScancodeRight || keyboardState SDL.ScancodeD
 
-    let SDL.Rectangle (SDL.P (SDL.V2 oldX y)) (SDL.V2 w h) = gamePlayerRect gameState
-        oldFlip = gamePlayerFlip gameState
+    let (SDL.Rectangle (SDL.P (SDL.V2 _ y)) (SDL.V2 w h), oldXF, yF) = playerRect
 
-    let (newX, newFlip)
+    let playerDelta = playerVel * deltaTime
+
+    let (newXF, newFlip)
             | left
                 && not right
-                && oldX - playerVel + playerLeftOffset > 0 =
-                (oldX - playerVel, True)
+                && oldXF - playerDelta + playerLeftOffset > 0 =
+                (oldXF - playerDelta, True)
             | right
                 && not left
-                && oldX + playerVel + w - playerRightOffset < screenWidth =
-                (oldX + playerVel, False)
-            | otherwise = (oldX, oldFlip)
+                && oldXF + playerDelta + fromIntegral w - playerRightOffset < screenWidth =
+                (oldXF + playerDelta, False)
+            | otherwise = (oldXF, oldFlip)
 
-    let playerRect = SDL.Rectangle (SDL.P (SDL.V2 newX y)) (SDL.V2 w h)
+    let newPlayerRect =
+            ( SDL.Rectangle (SDL.P (SDL.V2 (round newXF) y)) (SDL.V2 w h)
+            , newXF
+            , yF
+            )
     put
         gameState
-            { gamePlayerRect = playerRect
+            { gamePlayerRect = newPlayerRect
             , gamePlayerFlip = newFlip
             }

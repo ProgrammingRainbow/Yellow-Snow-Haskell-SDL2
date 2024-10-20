@@ -2,18 +2,15 @@ module LoadMedia (
     loadMedia,
 ) where
 
-import           Control.Monad.State (StateT, liftIO, modify, replicateM)
+import           Control.Monad.State (StateT)
 import qualified SDL
 import qualified SDL.Font
 import qualified SDL.Image
 import qualified SDL.Mixer
 
-import           Flakes              (resetFlake)
 import           GameConfig          (fontSize)
 import           GameTypes
-import           GameUtils           (addClean, rectFromTexture, safeRun)
-import           Player              (resetPlayer)
-import           Score               (updateScore)
+import           GameUtils           (addClean, safeRun)
 
 loadMedia :: (SDL.Window, SDL.Renderer) -> StateT GameState IO GameData
 loadMedia (window, renderer) = do
@@ -47,33 +44,6 @@ loadMedia (window, renderer) = do
             "Error loading a Texture"
     addClean $ SDL.destroyTexture yellowFlake
 
-    playerRect <-
-        safeRun
-            (rectFromTexture player)
-            "Error querying Texture"
-
-    whiteRect <-
-        safeRun
-            (rectFromTexture whiteFlake)
-            "Error querying Texture"
-    whiteRects <- liftIO $ replicateM 10 (resetFlake True whiteRect)
-
-    yellowRect <-
-        safeRun
-            (rectFromTexture yellowFlake)
-            "Error querying Texture"
-    yellowRects <- liftIO $ replicateM 5 (resetFlake True yellowRect)
-
-    modify $
-        \gameState ->
-            gameState
-                { gamePlayerRect = playerRect
-                , gameWhiteRects = whiteRects
-                , gameYellowRects = yellowRects
-                }
-
-    resetPlayer
-
     collectSound <-
         safeRun
             (SDL.Mixer.load "sounds/collect.ogg")
@@ -95,10 +65,6 @@ loadMedia (window, renderer) = do
     addClean $ SDL.Mixer.halt SDL.Mixer.AllChannels
     addClean SDL.Mixer.haltMusic
 
-    safeRun
-        (SDL.Mixer.playMusic SDL.Mixer.Forever music)
-        "Error Playing Music"
-
     let gameData =
             GameData
                 { gameWindow = window
@@ -112,7 +78,5 @@ loadMedia (window, renderer) = do
                 , gameHitSound = hitSound
                 , gameMusic = music
                 }
-
-    updateScore gameData
 
     return gameData

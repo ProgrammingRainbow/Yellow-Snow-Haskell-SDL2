@@ -8,6 +8,8 @@ module GameConfig (
     scoreY,
     flakeVel,
     flakeFloor,
+    frameDelay,
+    frameDelayMax,
     playerVel,
     playerY,
     playerTopOffset,
@@ -26,7 +28,7 @@ import qualified SDL.Mixer
 windowTitle :: Text
 windowTitle = pack "Don't Eat the Yellow Snow!"
 
-screenWidth, screenHeight :: CInt
+screenWidth, screenHeight :: Float
 screenWidth = 800
 screenHeight = 600
 
@@ -40,14 +42,19 @@ scoreX, scoreY :: CInt
 scoreX = 10
 scoreY = 10
 
-flakeVel :: CInt
-flakeVel = 5
+flakeVel :: Float
+flakeVel = 300
 
-flakeFloor :: CInt
+flakeFloor :: Float
 flakeFloor = 514
 
-playerVel, playerY, playerTopOffset, playerLeftOffset, playerRightOffset :: CInt
-playerVel = 5
+frameDelay :: Float
+frameDelay = 1000 / 60
+frameDelayMax :: Float
+frameDelayMax = 1000 / 60
+
+playerVel, playerY, playerTopOffset, playerLeftOffset, playerRightOffset :: Float
+playerVel = 300
 playerY = 377
 playerTopOffset = 10
 playerLeftOffset = 47
@@ -57,7 +64,10 @@ myWindowConfig :: SDL.WindowConfig
 myWindowConfig =
     SDL.defaultWindow
         { SDL.windowPosition = SDL.Centered
-        , SDL.windowInitialSize = SDL.V2 screenWidth screenHeight
+        , SDL.windowInitialSize =
+            SDL.V2
+                (round screenWidth)
+                (round screenHeight)
         }
 
 myAudioConfig :: SDL.Mixer.Audio
