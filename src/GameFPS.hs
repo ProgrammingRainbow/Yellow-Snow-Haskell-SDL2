@@ -4,7 +4,8 @@ module GameFPS (
     fpsDelay,
 ) where
 
-import           Control.Monad.State (StateT, get, liftIO, modify, put, when)
+import           Control.Monad       (when)
+import           Control.Monad.State (StateT, get, liftIO, modify, put)
 import qualified SDL
 
 import           GameConfig          (frameDelay, frameDelayMax)

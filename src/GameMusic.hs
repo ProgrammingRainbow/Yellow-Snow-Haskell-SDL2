@@ -3,7 +3,8 @@ module GameMusic (
     toggleMusic,
 ) where
 
-import           Control.Monad.State (StateT, get, gets, put, when)
+import           Control.Monad       (when)
+import           Control.Monad.State (StateT, get, gets, put)
 import qualified SDL.Mixer
 
 import           GameTypes
