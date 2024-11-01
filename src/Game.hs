@@ -4,8 +4,8 @@ module Game (
     initGame,
 ) where
 
-import           Control.Monad.State (StateT, get, gets, liftIO, modify, put,
-                                      replicateM, unless, when)
+import           Control.Monad       (replicateM, unless, when)
+import           Control.Monad.State (StateT, get, gets, liftIO, modify, put)
 import qualified SDL
 import qualified SDL.Mixer
 

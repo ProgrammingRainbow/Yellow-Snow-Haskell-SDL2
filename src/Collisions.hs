@@ -2,7 +2,8 @@ module Collisions (
     checkCollisions,
 ) where
 
-import           Control.Monad.State (StateT, get, liftIO, put, when)
+import           Control.Monad       (when)
+import           Control.Monad.State (StateT, get, liftIO, put)
 import qualified SDL
 import qualified SDL.Mixer
 
